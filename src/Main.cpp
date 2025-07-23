@@ -4,11 +4,11 @@
 #include<cmath>
 #include<stb/stb_image.h>
 
-#include"shaderClass.h"
-#include"VAO.h"
-#include"VBO.h"
-#include"EBO.h"
-#include"Texture.h"
+#include "../include/shaderClass.h"
+#include "../VAO.h"
+#include "../VBO.h"
+#include "../include/EBO.h"
+#include "../Texture.h"
 
 
 // Vertices coordinates
