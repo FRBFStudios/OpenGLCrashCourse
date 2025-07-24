@@ -1,8 +1,8 @@
 #include<iostream>
-#include</home/FRBF/CLionProjects/OpenGLCrashCourse/include/glad/glad.h>
+#include<../include/glad/glad.h>
 #include<../include/GLFW/glfw3.h>
 #include<cmath>
-#include</home/FRBF/CLionProjects/OpenGLCrashCourse/include/stb/stb_image.h>
+#include<../include/stb/stb_image.h>
 
 #include "../include/shaderClass.h"
 #include "../include/VAO.h"

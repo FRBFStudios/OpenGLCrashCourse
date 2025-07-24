@@ -1,7 +1,7 @@
 #ifndef VAO_CLASS_H
 #define VAO_CLASS_H
 
-#include</home/FRBF/CLionProjects/OpenGLCrashCourse/include/glad/glad.h>
+#include<../include/glad/glad.h>
 #include "../include/VBO.h"
 
 class VAO
