@@ -1,14 +1,14 @@
 #include<iostream>
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
+#include</home/FRBF/CLionProjects/OpenGLCrashCourse/include/glad/glad.h>
+#include<../include/GLFW/glfw3.h>
 #include<cmath>
-#include<stb/stb_image.h>
+#include</home/FRBF/CLionProjects/OpenGLCrashCourse/include/stb/stb_image.h>
 
 #include "../include/shaderClass.h"
-#include "../VAO.h"
-#include "../VBO.h"
+#include "../include/VAO.h"
+#include "../include/VBO.h"
 #include "../include/EBO.h"
-#include "../Texture.h"
+#include "../include/Texture.h"
 
 
 // Vertices coordinates
@@ -61,7 +61,7 @@ int main ()
 	// The window is given a viewport from its top left to bottom right
 	glViewport (0, 0, 800, 800);
 
-	Shader shaderProgram ("default.vert", "default.frag");
+	Shader shaderProgram ("shaders/default.vert", "shaders/default.frag");
 
 	VAO VAO1;
 	VAO1.Bind ();
@@ -82,7 +82,7 @@ int main ()
 	// Texture
 
 	// Creates a reference object for the texture and generates 1 texture
-	Texture happyN ("n_happy.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture happyN ("resources/n_happy.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	happyN.texUnit (shaderProgram, "tex0", 0);
 
 

@@ -8,24 +8,33 @@ cmake_policy(SET CMP0072 NEW)
 set(OpenGL_GL_PREFERENCE GLVND)
 
 find_package(OpenGL REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLFW REQUIRED glfw3)
 
-add_library(glad src/glad.c)
-target_include_directories(glad PUBLIC include)
-
-# Gather all source files in src/
-file(GLOB SOURCES src/*.cpp)
+set(SOURCES
+        src/Main.cpp
+        src/stb.cpp
+        src/shaderClass.cpp
+        src/VAO.cpp
+        src/VBO.cpp
+        src/EBO.cpp
+        src/Texture.cpp
+        src/glad.c
+)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        include
-        ${GLFW_INCLUDE_DIRS}
+        ${CMAKE_SOURCE_DIR}/include
 )
 
+link_directories(${CMAKE_SOURCE_DIR}/lib)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/lib/libglfw3.a
         OpenGL::GL
-        ${GLFW_LIBRARIES}
-        glad
+        dl
+        pthread
+        wayland-client
+        wayland-cursor
+        wayland-egl
+        xkbcommon
 )
