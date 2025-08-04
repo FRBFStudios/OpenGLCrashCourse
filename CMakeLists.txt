@@ -18,6 +18,8 @@ set(SOURCES
         src/EBO.cpp
         src/Texture.cpp
         src/glad.c
+        include/Camera.h
+        src/Camera.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

@@ -13,17 +13,15 @@ out vec3 color;
 // Outputs the texture coordinates to the fragment shader
 out vec2 texCoord;
 
-// Controls the scale of the vertices
-uniform float scale;
-
+uniform mat4 camMatrix;
 
 void main()
 {
 	// Sets the 4D position vector of the vertex (gl_Position) to its xyz aswell as 1.0 for w (no 3D graphics yet)
-	gl_Position = vec4(aPos.x + aPos.x * scale, aPos.y + aPos.y * scale, aPos.z + aPos.z * scale, 1.0);
+	gl_Position = camMatrix * vec4(aPos, 1.0);
 
 	// Assigns the colors from the Vertex Data to "color"
 	color = aColor;
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
-	texCoord = vec2(aTex.x * (scale + 1.0f), aTex.y * (scale + 1.0f));
+	texCoord = aTex;
 }
