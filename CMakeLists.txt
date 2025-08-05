@@ -12,7 +12,7 @@ find_package(OpenGL REQUIRED)
 set(SOURCES
         src/Main.cpp
         src/stb.cpp
-        src/shaderClass.cpp
+        src/ShaderClass.cpp
         src/VAO.cpp
         src/VBO.cpp
         src/EBO.cpp
