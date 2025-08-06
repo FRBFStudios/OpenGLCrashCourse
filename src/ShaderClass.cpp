@@ -1,5 +1,8 @@
 #include "../include/ShaderClass.h"
 
+#include<iostream>
+#include <fstream>
+
 // Reads a text file and outputs a string with everything in the text file
 std::string getFileContents(const char *filename) {
 	if(std::ifstream in(filename, std::ios::binary); in) {

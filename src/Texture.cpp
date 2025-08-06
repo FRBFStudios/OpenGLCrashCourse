@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-<Texture::Texture (const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture (const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
 {
 	// Assigns the type of the texture ot the texture object
 	type = texType;

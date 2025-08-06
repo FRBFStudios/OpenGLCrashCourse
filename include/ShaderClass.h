@@ -3,6 +3,7 @@
 
 #include"glad/glad.h"
 #include<string>
+#include<fstream>
 
 std::string getFileContents(const char* filename);
 
