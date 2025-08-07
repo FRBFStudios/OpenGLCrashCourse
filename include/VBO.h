@@ -5,7 +5,7 @@
 
 class VBO {
 public:
-	unsigned int ID;
+	unsigned int ID{};
 	VBO(GLfloat* vertices, GLsizeiptr size);
 
 	void Bind();

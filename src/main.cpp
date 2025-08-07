@@ -51,15 +51,15 @@ int main() {
 
 
 	float vertices [] = {
-		1.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 //0.5f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
 		0, 1, 2,
-		//1, 2, 3
+		1, 2, 3
 	};
 
 	float offset_x_location = glGetUniformLocation(defaultProgram.ID, "offset_x");
@@ -67,9 +67,29 @@ int main() {
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
 
-	VAO1.LinkVBO(VBO1, 0);
+	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 5 * sizeof(float), static_cast<void*>(0));
+	VAO1.LinkAttributes(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
 
 	EBO EBO1(indices, sizeof(indices), VAO1);
+
+	int width, height, nrChannels;
+
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load("../resources/n_happy.png", &width, &height, &nrChannels, 0);
+
+	unsigned int testTexture;
+	glGenTextures(1, &testTexture);
+	glBindTexture(GL_TEXTURE_2D, testTexture);
+
+	GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data);
+
+	defaultProgram.Activate();
+	glUniform1i(glGetUniformLocation(defaultProgram.ID, "tex"), 0);
 
 	while(!glfwWindowShouldClose(window)) {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -78,19 +98,19 @@ int main() {
 		defaultProgram.Activate();
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	VBO1.Unbind();
+	VBO::Unbind();
 	VBO1.Delete();
 
-	VAO1.Unbind();
+	VAO::Unbind();
 	VAO1.Delete();
 
-	EBO1.Unbind();
+	EBO::Unbind();
 	EBO1.Delete();
 
 	defaultProgram.Delete();
