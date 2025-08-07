@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "stb_image.h"
+#include "texture.h"
 
 #include "shader_program.h"
 
@@ -72,21 +73,7 @@ int main() {
 
 	EBO EBO1(indices, sizeof(indices), VAO1);
 
-	int width, height, nrChannels;
-
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load("../resources/n_happy.png", &width, &height, &nrChannels, 0);
-
-	unsigned int testTexture;
-	glGenTextures(1, &testTexture);
-	glBindTexture(GL_TEXTURE_2D, testTexture);
-
-	GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	stbi_image_free(data);
+	Texture testTexture("../resources/n_happy.png", GL_TEXTURE_2D);
 
 	defaultProgram.Activate();
 	glUniform1i(glGetUniformLocation(defaultProgram.ID, "tex"), 0);
