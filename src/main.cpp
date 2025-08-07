@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -48,16 +49,18 @@ int main() {
 
 
 	float vertices [] = {
-		-0.5f, -0.5f, 0.0f,
+		1.0f, 1.0f, 0.0f,
 		-0.5f,  0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f
+		 //0.5f,  0.5f, 0.0f
 	};
 
 	unsigned int indices[] = {
 		0, 1, 2,
-		1, 2, 3
+		//1, 2, 3
 	};
+
+	float offset_x_location = glGetUniformLocation(defaultProgram.ID, "offset_x");
 
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
@@ -71,6 +74,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		defaultProgram.Activate();
+
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
 
