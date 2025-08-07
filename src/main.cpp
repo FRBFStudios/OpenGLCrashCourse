@@ -4,13 +4,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "stb_image.h"
+
 #include "shader_program.h"
 
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
 }
 
@@ -45,7 +47,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-	ShaderProgram defaultProgram("shaders/default.vert", "shaders/default.frag");
+	ShaderProgram defaultProgram("../shaders/default.vert", "../shaders/default.frag");
 
 
 	float vertices [] = {
