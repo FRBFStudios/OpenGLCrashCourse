@@ -9,20 +9,19 @@ set(OpenGL_GL_PREFERENCE GLVND)
 
 find_package(OpenGL REQUIRED)
 
-set(SOURCES
-        src/Main.cpp
-        src/stb.cpp
-        src/ShaderClass.cpp
-        src/VAO.cpp
-        src/VBO.cpp
-        src/EBO.cpp
-        src/Texture.cpp
-        src/glad.c
-        include/Camera.h
-        src/Camera.cpp
-)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+list(APPEND SOURCES src/glad.c)
+
+add_executable(${PROJECT_NAME} ${SOURCES}
+        include/VBO.h
+        src/VBO.cpp
+        include/shader_program.h
+        src/shader_program.cpp
+        include/VAO.h
+        src/VAO.cpp
+        include/EBO.h
+        src/EBO.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include

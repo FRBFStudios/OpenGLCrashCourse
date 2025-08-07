@@ -1,20 +1,7 @@
-#version 330 core
+#version 460 core
 
-// Outputs colors in RGBA
 out vec4 FragColor;
 
-
-// Inputs the color from the Vertex Shader
-in vec3 color;
-// Inputs the texture coordinates from the Vertex Shader
-in vec2 texCoord;
-
-// Gets the Texture Unit from the main function
-uniform sampler2D tex0;
-
-
-void main()
-{
-	FragColor = texture(tex0, texCoord);
-	// FragColor = vec4(color.x * (scale + 1.0f), color.y * (scale + 1.0f), color.z * (scale + 1.0f), 1.0f); Sets the RGBA values to the same shade of red in every case
+void main() {
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
