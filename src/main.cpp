@@ -52,10 +52,10 @@ int main() {
 
 
 	float vertices [] = {
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
@@ -68,15 +68,17 @@ int main() {
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
 
-	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 5 * sizeof(float), static_cast<void*>(0));
-	VAO1.LinkAttributes(VBO1, 1, 2, GL_FLOAT, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
+	VAO1.LinkAttributes(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+	VAO1.LinkAttributes(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));
 
 	EBO EBO1(indices, sizeof(indices), VAO1);
 
-	Texture testTexture("../resources/n_happy.png", GL_TEXTURE_2D);
+	Texture testTexture("../resources/n_happy.png", GL_TEXTURE_2D, GL_TEXTURE0);
+	Texture::setTexUnit(defaultProgram, "tex", 0);
 
-	defaultProgram.Activate();
-	glUniform1i(glGetUniformLocation(defaultProgram.ID, "tex"), 0);
+	// Texture overlayTexture("../resources/awesomeface.png", GL_TEXTURE_2D, GL_TEXTURE1);
+	// Texture::setTexUnit(defaultProgram, "texOverlay", 1);
 
 	while(!glfwWindowShouldClose(window)) {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
