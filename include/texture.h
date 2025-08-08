@@ -11,12 +11,12 @@ public:
 	GLenum format;
 	GLenum type;
 
-	explicit Texture(char const* filePath, GLenum typeArg);
+	explicit Texture(char const* filePath, GLenum typeArg, GLenum texUnit);
 
-	void setTexUnit(ShaderProgram& shaderProgram, const char* uniform, unsigned int unit);
+	static void setTexUnit(ShaderProgram &shaderProgram, const char *uniform, GLint unit);
 	void Bind() const;
-	static void Unbind();
-	void Delete();
+	void Unbind() const;
+	void Delete() const;
 };
 
 #endif //TEXTURE_H
