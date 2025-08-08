@@ -9,7 +9,7 @@ public:
 	unsigned int ID{};
 	VAO();
 
-	void LinkAttributes(::VBO &VBO, unsigned int layout, GLint size, GLenum type, GLsizei stride, const void *offset) const;
+	void LinkAttributes(VBO &VBO, unsigned int layout, GLint size, GLenum type, GLsizei stride, const void *offset) const;
 	void Bind() const;
 	static void Unbind();
 	void Delete();

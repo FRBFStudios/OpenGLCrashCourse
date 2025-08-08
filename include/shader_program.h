@@ -1,12 +1,9 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <glad/glad.h>
 #include <string>
-#include<fstream>
-#include<sstream>
-#include<iostream>
-#include<cerrno>
+
+#include <glm/fwd.hpp>
 
 std::string getFileContents(const char* filename);
 
@@ -15,6 +12,8 @@ public:
 	unsigned int ID;
 
 	ShaderProgram(const char* vertexShaderFile, const char* fragmentShaderFile);
+
+	void setMat4Uniform(const std::string &uniform, glm::mat4 matrix);
 
 	void Activate();
 	void Delete();

@@ -31,8 +31,8 @@ void processInput(GLFWwindow *window) {
 	}
 }
 
-const int WIDTH = 16;
-const int HEIGHT = 9;
+constexpr int WIDTH = 16;
+constexpr int HEIGHT = 9;
 
 int main() {
 	glfwInit();
@@ -101,11 +101,7 @@ int main() {
 
 
 
-	auto projectionMatrix = glm::perspective(glm::radians(80.0f), static_cast<float>(WIDTH / HEIGHT), 0.1f, 100.0f);
-
-	int modelMatrixLocation = glGetUniformLocation(defaultProgram.ID, "modelMatrix");
-	int viewMatrixLocation = glGetUniformLocation(defaultProgram.ID, "viewMatrix");
-	int projectionMatrixLocation = glGetUniformLocation(defaultProgram.ID, "projectionMatrix");
+	auto projectionMatrix = glm::perspective(glm::radians(80.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
 	float totalAngle = 0.0f;
 	float totalDistanceFactor = 0.0f;
@@ -127,6 +123,7 @@ int main() {
 		}
 
 		auto modelMatrix = glm::mat4(1.0f);
+
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -135,9 +132,9 @@ int main() {
 		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, static_cast<float>(sin(totalDistanceFactor) - 3.0f)));
 
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+		defaultProgram.setMat4Uniform("modelMatrix", modelMatrix);
+		defaultProgram.setMat4Uniform("viewMatrix", viewMatrix);
+		defaultProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
 		VAO1.Bind();
 

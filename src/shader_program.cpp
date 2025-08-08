@@ -1,4 +1,12 @@
+#include<fstream>
+#include<sstream>
+#include<cerrno>
+
+#include <glad/glad.h>
+
 #include "shader_program.h"
+
+#include <glm/gtc/type_ptr.hpp>
 
 std::string getFileContents(const char* filename) {
 	if (std::ifstream in(filename, std::ios::binary); in)
@@ -42,6 +50,11 @@ ShaderProgram::ShaderProgram(const char* vertexShaderFile, const char* fragmentS
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+}
+
+void ShaderProgram::setMat4Uniform(const std::string &uniform, glm::mat4 matrix) {
+	Activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, uniform.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void ShaderProgram::Activate() {
