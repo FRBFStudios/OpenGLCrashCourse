@@ -24,9 +24,9 @@ auto world_zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
 
 auto cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
 
-auto camera_zAxis = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_xAxis = glm::normalize(glm::cross(world_yAxis, camera_zAxis));
-glm::vec3 camera_yAxis = glm::normalize(glm::cross(camera_zAxis, camera_xAxis));
+glm::vec3 camera_xAxis;
+glm::vec3 camera_yAxis;
+glm::vec3 camera_zAxis;
 
 float cameraSpeed = 0.01f;
 
@@ -74,6 +74,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
 	camera_zAxis = glm::normalize(front);
+	camera_xAxis = glm::normalize(glm::cross(world_yAxis, camera_zAxis));
+	camera_yAxis = glm::normalize(glm::cross(camera_zAxis, camera_xAxis));
 };
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
@@ -102,16 +104,20 @@ void processInput(GLFWwindow *window) {
 
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cameraPosition += cameraSpeed * camera_zAxis;
-	}
-	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+	} else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		cameraPosition -= cameraSpeed * camera_zAxis;
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * glm::cross(camera_yAxis, camera_zAxis);
+		cameraPosition += cameraSpeed * camera_xAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPosition -= cameraSpeed * camera_xAxis;
 	}
-	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * glm::cross(camera_yAxis, camera_zAxis);
+
+	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		cameraPosition += cameraSpeed * camera_yAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		cameraPosition -= cameraSpeed * camera_yAxis;
 	}
 }
 
