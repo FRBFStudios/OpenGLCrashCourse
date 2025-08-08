@@ -21,7 +21,10 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/VAO.h
         src/VAO.cpp
         include/EBO.h
-        src/EBO.cpp)
+        src/EBO.cpp
+        src/stb.cpp
+        include/texture.h
+        src/texture.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include

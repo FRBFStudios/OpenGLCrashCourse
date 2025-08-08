@@ -4,13 +4,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "stb_image.h"
+#include "texture.h"
+
 #include "shader_program.h"
 
 #include "VBO.h"
 #include "VAO.h"
 #include "EBO.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
 }
 
@@ -45,19 +48,19 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-	ShaderProgram defaultProgram("shaders/default.vert", "shaders/default.frag");
+	ShaderProgram defaultProgram("../shaders/default.vert", "../shaders/default.frag");
 
 
 	float vertices [] = {
-		1.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 //0.5f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
 		0, 1, 2,
-		//1, 2, 3
+		1, 2, 3
 	};
 
 	float offset_x_location = glGetUniformLocation(defaultProgram.ID, "offset_x");
@@ -65,9 +68,17 @@ int main() {
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
 
-	VAO1.LinkVBO(VBO1, 0);
+	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
+	VAO1.LinkAttributes(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+	VAO1.LinkAttributes(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));
 
 	EBO EBO1(indices, sizeof(indices), VAO1);
+
+	Texture testTexture("../resources/n_happy.png", GL_TEXTURE_2D, GL_TEXTURE0);
+	Texture::setTexUnit(defaultProgram, "tex", 0);
+
+	// Texture overlayTexture("../resources/awesomeface.png", GL_TEXTURE_2D, GL_TEXTURE1);
+	// Texture::setTexUnit(defaultProgram, "texOverlay", 1);
 
 	while(!glfwWindowShouldClose(window)) {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -76,19 +87,19 @@ int main() {
 		defaultProgram.Activate();
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	VBO1.Unbind();
+	VBO::Unbind();
 	VBO1.Delete();
 
-	VAO1.Unbind();
+	VAO::Unbind();
 	VAO1.Delete();
 
-	EBO1.Unbind();
+	EBO::Unbind();
 	EBO1.Delete();
 
 	defaultProgram.Delete();
