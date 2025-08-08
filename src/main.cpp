@@ -28,6 +28,8 @@ glm::vec3 camera_xAxis;
 glm::vec3 camera_yAxis;
 glm::vec3 camera_zAxis;
 
+glm::vec3 camera_moveDir;
+
 float cameraSpeed = 0.01f;
 
 float fov = 80.0;
@@ -73,6 +75,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
+	camera_moveDir = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
+
 	camera_zAxis = glm::normalize(front);
 	camera_xAxis = glm::normalize(glm::cross(world_yAxis, camera_zAxis));
 	camera_yAxis = glm::normalize(glm::cross(camera_zAxis, camera_xAxis));
@@ -103,9 +107,9 @@ void processInput(GLFWwindow *window) {
 
 
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * camera_zAxis;
+		cameraPosition += cameraSpeed * camera_moveDir;
 	} else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * camera_zAxis;
+		cameraPosition -= cameraSpeed * camera_moveDir;
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
@@ -115,9 +119,9 @@ void processInput(GLFWwindow *window) {
 	}
 
 	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * camera_yAxis;
+		cameraPosition += cameraSpeed * world_yAxis;
 	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * camera_yAxis;
+		cameraPosition -= cameraSpeed * world_yAxis;
 	}
 }
 
