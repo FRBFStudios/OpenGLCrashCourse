@@ -17,17 +17,101 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+auto world_xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+auto world_yAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+auto world_zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+
+
+auto cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+
+auto camera_zAxis = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_xAxis = glm::normalize(glm::cross(world_yAxis, camera_zAxis));
+glm::vec3 camera_yAxis = glm::normalize(glm::cross(camera_zAxis, camera_xAxis));
+
+float cameraSpeed = 0.01f;
+
+float fov = 80.0;
+
+float yaw = -90.0;
+float pitch = 0.0;
+
+float lastX = 0;
+float lastY = 0;
+
+bool firstMouse = true;
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+	if(firstMouse) {
+		lastX = xpos;
+		lastY = ypos;
+
+		firstMouse = false;
+	}
+
+	float cameraSensitivity = 0.3f;
+
+	float xOffset = xpos - lastX;
+	float yOffset = lastY - ypos;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	xOffset *= cameraSensitivity;
+	yOffset *= cameraSensitivity;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if(pitch >= 89.0f) {
+		pitch = 89.0f;
+	} else if(pitch <= -89.0f) {
+		pitch = -89.0f;
+	}
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+	camera_zAxis = glm::normalize(front);
+};
+
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow *window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+	}
+
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		fov = 30.0f;
+	} else {
+		fov = 80.0f;
+	}
+
+
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cameraPosition += cameraSpeed * camera_zAxis;
+	}
+	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		cameraPosition -= cameraSpeed * camera_zAxis;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cameraPosition += cameraSpeed * glm::cross(camera_yAxis, camera_zAxis);
+	}
+	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPosition -= cameraSpeed * glm::cross(camera_yAxis, camera_zAxis);
 	}
 }
 
@@ -58,19 +142,19 @@ int main() {
 	}
 
 	glViewport(0, 0, WIDTH, HEIGHT);
-
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	ShaderProgram defaultProgram("shaders/default.vert", "shaders/default.frag");
 
-
 	float vertices [] = {
-		-0.5f, -0.5f, -0.4f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.4f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, -0.4f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		 0.0f,  0.0f,  0.4f, 1.0f, 1.0f, 1.0f, 0.5f, 1.0f,
+		-0.5f, -0.4f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, -0.4f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+		 0.5f, -0.4f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.4f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		 0.0f,  0.4f,  0.0f, 1.0f, 1.0f, 1.0f, 0.5f, 1.0f,
 	};
 
 	unsigned int indices[] = {
@@ -81,8 +165,6 @@ int main() {
 		0, 2, 4,
 		1, 3, 4
 	};
-
-	float offset_x_location = glGetUniformLocation(defaultProgram.ID, "offset_x");
 
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
@@ -99,46 +181,27 @@ int main() {
 	// Texture overlayTexture("resources/awesomeface.png", GL_TEXTURE_2D, GL_TEXTURE1);
 	// Texture::setTexUnit(defaultProgram, "texOverlay", 1);
 
-
-
-	auto projectionMatrix = glm::perspective(glm::radians(80.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
-
-	float totalAngle = 0.0f;
-	float totalDistanceFactor = 0.0f;
-
 	glEnable(GL_DEPTH_TEST);
 
 	while(!glfwWindowShouldClose(window)) {
+		processInput(window);
+
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		defaultProgram.Activate();
 
-		totalAngle += 0.5f;
-
-		totalDistanceFactor += 0.03f;
-
-		if(totalAngle >= 360.0f) {
-			totalAngle = 0.0f;
-		}
-
 		auto modelMatrix = glm::mat4(1.0f);
 
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(1.0f, 0.0f, 0.0f));
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(totalAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + camera_zAxis, camera_yAxis);
 
-		auto viewMatrix = glm::mat4(1.0f);
-		viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, static_cast<float>(sin(totalDistanceFactor) - 3.0f)));
-
+		auto projectionMatrix = glm::perspective(glm::radians(fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
 		defaultProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		defaultProgram.setMat4Uniform("viewMatrix", viewMatrix);
 		defaultProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
 		VAO1.Bind();
-
-		processInput(window);
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
