@@ -24,7 +24,9 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         src/EBO.cpp
         src/stb.cpp
         include/texture.h
-        src/texture.cpp)
+        src/texture.cpp
+        include/camera.h
+        src/camera.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include

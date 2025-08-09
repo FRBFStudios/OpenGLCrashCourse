@@ -13,117 +13,21 @@
 #include "VAO.h"
 #include "EBO.h"
 
+#include "camera.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-auto world_xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-auto world_yAxis = glm::vec3(0.0f, 1.0f, 0.0f);
-auto world_zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
-
-auto cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-
-glm::vec3 camera_xAxis;
-glm::vec3 camera_yAxis;
-glm::vec3 camera_zAxis;
-
-glm::vec3 camera_moveDir;
-
-float cameraSpeed = 0.01f;
-
-float fov = 80.0;
-
-float yaw = -90.0;
-float pitch = 0.0;
-
-float lastX = 0;
-float lastY = 0;
-
-bool firstMouse = true;
-
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-	if(firstMouse) {
-		lastX = xpos;
-		lastY = ypos;
-
-		firstMouse = false;
-	}
-
-	float cameraSensitivity = 0.3f;
-
-	float xOffset = xpos - lastX;
-	float yOffset = lastY - ypos;
-
-	lastX = xpos;
-	lastY = ypos;
-
-	xOffset *= cameraSensitivity;
-	yOffset *= cameraSensitivity;
-
-	yaw += xOffset;
-	pitch += yOffset;
-
-	if(pitch >= 89.0f) {
-		pitch = 89.0f;
-	} else if(pitch <= -89.0f) {
-		pitch = -89.0f;
-	}
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-	camera_moveDir = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
-
-	camera_zAxis = glm::normalize(front);
-	camera_xAxis = glm::normalize(glm::cross(world_yAxis, camera_zAxis));
-	camera_yAxis = glm::normalize(glm::cross(camera_zAxis, camera_xAxis));
-};
+Camera camera(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), 80.0f, 0.1f, 0.05f);
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
-
-
-	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	} else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-
-
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-		fov = 30.0f;
-	} else {
-		fov = 80.0f;
-	}
-
-
-	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * camera_moveDir;
-	} else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * camera_moveDir;
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * camera_xAxis;
-	} else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * camera_xAxis;
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cameraPosition += cameraSpeed * world_yAxis;
-	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cameraPosition -= cameraSpeed * world_yAxis;
-	}
-}
+void processInput(GLFWwindow *window);
 
 constexpr int WIDTH = 16;
 constexpr int HEIGHT = 9;
@@ -203,9 +107,9 @@ int main() {
 
 		auto modelMatrix = glm::mat4(1.0f);
 
-		glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + camera_zAxis, camera_yAxis);
+		glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 
-		auto projectionMatrix = glm::perspective(glm::radians(fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
+		auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
 		defaultProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		defaultProgram.setMat4Uniform("viewMatrix", viewMatrix);
@@ -233,4 +137,47 @@ int main() {
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+	camera.lookAround(xpos, ypos);
+}
+
+void processInput(GLFWwindow *window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
+
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	} else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		camera.fov = 30.0f;
+	} else {
+		camera.fov = 80.0f;
+	}
+
+
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.position += camera.speed * camera.moveDir;
+	} else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.position -= camera.speed * camera.moveDir;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.position += camera.speed * camera.xAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.position -= camera.speed * camera.xAxis;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		camera.position += camera.speed * camera.world_yAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		camera.position -= camera.speed * camera.world_yAxis;
+	}
 }
