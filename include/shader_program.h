@@ -13,10 +13,11 @@ public:
 
 	ShaderProgram(const char* vertexShaderFile, const char* fragmentShaderFile);
 
-	void setMat4Uniform(const std::string &uniform, glm::mat4 matrix);
+	void setVec3Uniform(const std::string &uniform, glm::vec3 vector) const;
+	void setMat4Uniform(const std::string &uniform, glm::mat4 matrix) const;
 
-	void Activate();
-	void Delete();
+	void Activate() const;
+	void Delete() const;
 };
 
 #endif //SHADER_H

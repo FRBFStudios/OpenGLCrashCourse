@@ -1,6 +1,7 @@
 #include<fstream>
 #include<sstream>
 #include<cerrno>
+#include <iostream>
 
 #include <glad/glad.h>
 
@@ -9,8 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 std::string getFileContents(const char* filename) {
-	if (std::ifstream in(filename, std::ios::binary); in)
-	{
+	if (std::ifstream in(filename, std::ios::binary); in) {
 		std::string contents;
 		in.seekg(0, std::ios::end);
 		contents.resize(in.tellg());
@@ -19,23 +19,24 @@ std::string getFileContents(const char* filename) {
 		in.close();
 		return(contents);
 	}
+	std::cout << "Error reading shader file: " << filename << std::endl;
 	throw(errno);
 }
 
 ShaderProgram::ShaderProgram(const char* vertexShaderFile, const char* fragmentShaderFile) {
-	std::string vertexShaderCode = getFileContents(vertexShaderFile);
-	std::string fragmentShaderCode = getFileContents(fragmentShaderFile);
+	const std::string vertexShaderCode = getFileContents(vertexShaderFile);
+	const std::string fragmentShaderCode = getFileContents(fragmentShaderFile);
 
 	const char *vertexShaderSource = vertexShaderCode.c_str();
 	const char *fragmentShaderSource = fragmentShaderCode.c_str();
 
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
 	glCompileShader(vertexShader);
 
 
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	const unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
 	glCompileShader(fragmentShader);
@@ -52,15 +53,21 @@ ShaderProgram::ShaderProgram(const char* vertexShaderFile, const char* fragmentS
 	glDeleteShader(fragmentShader);
 }
 
-void ShaderProgram::setMat4Uniform(const std::string &uniform, glm::mat4 matrix) {
+void ShaderProgram::setVec3Uniform(const std::string &uniform, glm::vec3 vector) const {
+	Activate();
+	glUniform3fv(glGetUniformLocation(ID, uniform.c_str()), 1, glm::value_ptr(vector));
+}
+
+
+void ShaderProgram::setMat4Uniform(const std::string &uniform, glm::mat4 matrix) const {
 	Activate();
 	glUniformMatrix4fv(glGetUniformLocation(ID, uniform.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void ShaderProgram::Activate() {
+void ShaderProgram::Activate() const {
 	glUseProgram(ID);
 }
 
-void ShaderProgram::Delete() {
+void ShaderProgram::Delete() const {
 	glDeleteProgram(ID);
 }
