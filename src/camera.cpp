@@ -24,20 +24,22 @@ Camera::Camera(const glm::vec3 startPosition, glm::vec3 startLookDir, float fovA
 	xAxis = glm::normalize(glm::cross(world_yAxis, zAxis));
 	yAxis = glm::normalize(glm::cross(zAxis, xAxis));
 
-	yaw = 0.0f;
+	yaw = -90.0f;
 	pitch = 0.0f;
 
 	lastX = 0.0f;
 	lastY = 0.0f;
 }
 
-void Camera::lookAround(double xPos, double yPos) {
+void Camera::lookAround(const double xPosIn, const double yPosIn) {
+	const auto xPos = static_cast<float>(xPosIn);
+	const auto yPos = static_cast<float>(yPosIn);
+
 	if(firstMouse) {
 		lastX = xPos;
 		lastY = yPos;
 
 		firstMouse = false;
-		return;
 	}
 
 	float xOffset = xPos - lastX;

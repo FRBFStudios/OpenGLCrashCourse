@@ -25,7 +25,7 @@ public:
 
 	Camera(glm::vec3 startPosition, glm::vec3 startLookDir, float fovArg, float sensitivityArg, float speedArg);
 
-	void lookAround(double xPos, double yPos);
+	void lookAround(double xPosIn, double yPosIn);
 };
 
 #endif //CAMERA_H

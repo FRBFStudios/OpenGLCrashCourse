@@ -21,7 +21,7 @@
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
-Camera camera(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), 80.0f, 0.1f, 0.05f);
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 80.0f, 0.1f, 0.05f);
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
 	glViewport(0, 0, width, height);
@@ -105,11 +105,11 @@ int main() {
 
 		defaultProgram.Activate();
 
-		auto modelMatrix = glm::mat4(1.0f);
+		constexpr auto modelMatrix = glm::mat4(1.0f);
 
-		glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
+		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 
-		auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
+		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
 		defaultProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		defaultProgram.setMat4Uniform("viewMatrix", viewMatrix);
