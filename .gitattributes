@@ -1,4 +1,4 @@
-include/* linguist-vendored
+include/** linguist-vendored
 
 emissive.frag linguist-language=C
 emissive.vert linguist-language=C
