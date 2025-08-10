@@ -1,6 +1,6 @@
-include/* linguist-vendored
-*.frag linguist-language=C
-*.vert linguist-language=C
+include/** linguist-vendored
+shaders/*.frag linguist-language=C
+shaders/emissive.vert linguist-language=C
 
 
 ###############################################################################
