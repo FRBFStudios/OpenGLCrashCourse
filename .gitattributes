@@ -1,5 +1,5 @@
-include/** linguist-vendored
-shaders/*.frag linguist-language=C
+include/* linguist-vendored
+emissive.frag linguist-language=C
 shaders/emissive.vert linguist-language=C
 
 
