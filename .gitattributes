@@ -1,8 +1,6 @@
-*.html -linguist-detectable
-include/ -linguist-detectable
-
-*.frag linguist-language=GLSL
-*.vert linguist-language=GLSL
+include/* linguist-vendored
+*.frag linguist-language=C
+*.vert linguist-language=C
 
 
 ###############################################################################
