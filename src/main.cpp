@@ -27,7 +27,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 80.0f, 0.1f, 0.05f);
 
-
 constexpr int WIDTH = 16;
 constexpr int HEIGHT = 9;
 
@@ -166,6 +165,12 @@ int main() {
 	Texture testTexture("resources/n_happy.png", GL_TEXTURE_2D, GL_TEXTURE0);
 	Texture::setTexUnit(defaultProgram, "tex", 0);
 
+	// Values for these parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
+	lightingProgram.setVec3Uniform("material.ambientColor", glm::vec3(0.05375f, 0.05f, 0.06625f));
+	lightingProgram.setVec3Uniform("material.surfaceColor", glm::vec3(0.18275f, 0.17f, 0.22525f));
+	lightingProgram.setVec3Uniform("material.specularColor", glm::vec3(0.332741f, 0.328634f, 0.346435f));
+	lightingProgram.setFloatUniform("material.shininess", 0.3 * 128);
+
 
 	while(!glfwWindowShouldClose(window)) {
 		constexpr float lightStrength = 1.0f;
@@ -193,7 +198,6 @@ int main() {
 		lightingProgram.setVec3Uniform("color", glm::vec3(1.0f, 0.0f, 0.0f));
 		lightingProgram.setVec3Uniform("lightSourcePosition", lightSourcePosition);
 		lightingProgram.setVec3Uniform("cameraPosition", camera.position);
-
 		lightingProgram.setFloatUniform("lightStrength", lightStrength);
 
 		VAO1.Bind();
@@ -222,11 +226,15 @@ int main() {
 
 	VAO::Unbind();
 	VAO1.Delete();
+	lightVAO.Delete();
 
 	EBO::Unbind();
 	EBO1.Delete();
+	lightEBO.Delete();
 
 	defaultProgram.Delete();
+	lightingProgram.Delete();
+	emissiveProgram.Delete();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
