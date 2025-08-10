@@ -167,43 +167,32 @@ int main() {
 
 	// Values for these parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
 	lightingProgram.setVec3Uniform("material.ambientColor", glm::vec3(0.05375f, 0.05f, 0.06625f));
-	lightingProgram.setVec3Uniform("material.surfaceColor", glm::vec3(0.18275f, 0.17f, 0.22525f));
+	lightingProgram.setVec3Uniform("material.baseColor", glm::vec3(0.18275f, 0.17f, 0.22525f));
 	lightingProgram.setVec3Uniform("material.specularColor", glm::vec3(0.332741f, 0.328634f, 0.346435f));
 	lightingProgram.setFloatUniform("material.shininess", 0.3 * 128);
 
+	lightingProgram.setVec3Uniform("light.ambientColor", glm::vec3(0.2f));
+	lightingProgram.setVec3Uniform("light.baseColor", glm::vec3(0.5f));
+	lightingProgram.setVec3Uniform("light.specularColor", glm::vec3(1.0f));
 
 	while(!glfwWindowShouldClose(window)) {
-		constexpr float lightStrength = 1.0f;
 		processInput(window);
+
+		auto modelMatrix = glm::mat4(1.0f);
+		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
+		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
 		lightSourcePosition.x = static_cast<float>(sin(glfwGetTime())) * 2;
 		lightSourcePosition.y = static_cast<float>(sin(glfwGetTime())) * 2;
 		lightSourcePosition.z = static_cast<float>(sin(glfwGetTime())) * 2;
 
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		lightingProgram.Activate();
-
-		auto modelMatrix = glm::mat4(1.0f);
-
-		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
-
-		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
-
 		lightingProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		lightingProgram.setMat4Uniform("viewMatrix", viewMatrix);
 		lightingProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
-		lightingProgram.setVec3Uniform("color", glm::vec3(1.0f, 0.0f, 0.0f));
-		lightingProgram.setVec3Uniform("lightSourcePosition", lightSourcePosition);
+		lightingProgram.setVec3Uniform("light.position", lightSourcePosition);
 		lightingProgram.setVec3Uniform("cameraPosition", camera.position);
-		lightingProgram.setFloatUniform("lightStrength", lightStrength);
 
-		VAO1.Bind();
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		emissiveProgram.Activate();
 
 		modelMatrix = glm::translate(modelMatrix, lightSourcePosition);
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
@@ -211,6 +200,20 @@ int main() {
 		emissiveProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		emissiveProgram.setMat4Uniform("viewMatrix", viewMatrix);
 		emissiveProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
+
+
+		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		lightingProgram.Activate();
+
+		VAO1.Bind();
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+
+
+		emissiveProgram.Activate();
 
 		lightVAO.Bind();
 
