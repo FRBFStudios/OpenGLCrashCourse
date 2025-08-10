@@ -1,3 +1,10 @@
+*.html -linguist-detectable
+include/ -linguist-detectable
+
+*.frag linguist-language=GLSL
+*.vert linguist-language=GLSL
+
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
