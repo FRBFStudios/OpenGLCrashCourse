@@ -13,6 +13,7 @@ public:
 
 	ShaderProgram(const char* vertexShaderFile, const char* fragmentShaderFile);
 
+	void setFloatUniform(const std::string &uniform, float value) const;
 	void setVec3Uniform(const std::string &uniform, glm::vec3 vector) const;
 	void setMat4Uniform(const std::string &uniform, glm::mat4 matrix) const;
 

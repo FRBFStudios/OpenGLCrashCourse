@@ -53,6 +53,12 @@ ShaderProgram::ShaderProgram(const char* vertexShaderFile, const char* fragmentS
 	glDeleteShader(fragmentShader);
 }
 
+void ShaderProgram::setFloatUniform(const std::string &uniform, float value) const {
+	Activate();
+	glUniform1f(glGetUniformLocation(ID,  uniform.c_str()), value);
+}
+
+
 void ShaderProgram::setVec3Uniform(const std::string &uniform, glm::vec3 vector) const {
 	Activate();
 	glUniform3fv(glGetUniformLocation(ID, uniform.c_str()), 1, glm::value_ptr(vector));

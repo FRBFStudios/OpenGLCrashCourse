@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 
-#include "shader_program.h"
+#include "../util/shader_program.h"
 
 class Texture {
 public:

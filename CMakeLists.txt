@@ -14,19 +14,19 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 list(APPEND SOURCES src/glad.c)
 
 add_executable(${PROJECT_NAME} ${SOURCES}
-        include/VBO.h
-        src/VBO.cpp
-        include/shader_program.h
-        src/shader_program.cpp
-        include/VAO.h
-        src/VAO.cpp
-        include/EBO.h
-        src/EBO.cpp
-        src/stb.cpp
-        include/texture.h
-        src/texture.cpp
-        include/camera.h
-        src/camera.cpp)
+        src/util/VBO.h
+        src/util/VBO.cpp
+        src/util/shader_program.h
+        src/util/shader_program.cpp
+        src/util/VAO.h
+        src/util/VAO.cpp
+        src/util/EBO.h
+        src/util/EBO.cpp
+        src/texture/stb.cpp
+        src/texture/texture.h
+        src/texture/texture.cpp
+        src/scene/camera.h
+        src/scene/camera.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include
