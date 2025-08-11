@@ -192,6 +192,10 @@ int main() {
 	lightingProgram.setVec3Uniform("light.baseColor", glm::vec3(0.5f));
 	lightingProgram.setVec3Uniform("light.specularColor", glm::vec3(1.0f));
 
+	lightingProgram.setFloatUniform("light.constant", 1.0f);
+	lightingProgram.setFloatUniform("light.linear", 0.09f);
+	lightingProgram.setFloatUniform("light.quadratic", 0.032f);
+
 	while(!glfwWindowShouldClose(window)) {
 		processInput(window);
 
@@ -203,6 +207,7 @@ int main() {
 		lightingProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
 		lightingProgram.setVec3Uniform("light.position", lightSourcePosition);
+
 		lightingProgram.setVec3Uniform("cameraPosition", camera.position);
 
 
