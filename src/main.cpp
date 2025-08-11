@@ -119,6 +119,20 @@ glm::vec3 lightSourcePosition(1.2f, 1.0f, 2.0f);
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3( 0.7f,  0.2f,  2.0f),
+		glm::vec3( 2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3( 0.0f,  0.0f, -3.0f)
+	};
+
+	glm::vec3 pointLightColors[] = {
+		glm::vec3(1.0f, 0.6f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 1.0, 0.0),
+		glm::vec3(0.2f, 0.2f, 1.0f)
+	};
+
 int main() {
 	glfwInit();
 
@@ -185,16 +199,53 @@ int main() {
 	Texture testSpecularMap("resources/boringTestImage_specularMap.png", GL_TEXTURE_2D, GL_TEXTURE1);
 	Texture::setTexUnit(lightingProgram, "material.specularColor", 1);
 
-	// Values for these parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
+	// Values for material parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
 	lightingProgram.setFloatUniform("material.shininess", 0.3 * 128);
 
-	lightingProgram.setVec3Uniform("light.ambientColor", glm::vec3(0.2f));
-	lightingProgram.setVec3Uniform("light.baseColor", glm::vec3(0.5f));
-	lightingProgram.setVec3Uniform("light.specularColor", glm::vec3(1.0f));
+	auto backgroundColor = glm::vec3(0.75f, 0.52f, 0.3f);
 
-	lightingProgram.setFloatUniform("light.constant", 1.0f);
-	lightingProgram.setFloatUniform("light.linear", 0.09f);
-	lightingProgram.setFloatUniform("light.quadratic", 0.032f);
+	lightingProgram.setVec3Uniform("sun.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+	lightingProgram.setVec3Uniform("sun.ambientColor", backgroundColor * 0.125f);
+	lightingProgram.setVec3Uniform("sun.baseColor", backgroundColor);
+	lightingProgram.setVec3Uniform("sun.specularColor", backgroundColor * 1.25f);
+
+	lightingProgram.setVec3Uniform("pointLights[0].position", pointLightPositions[0]);
+	lightingProgram.setVec3Uniform("pointLights[1].position", pointLightPositions[1]);
+	lightingProgram.setVec3Uniform("pointLights[2].position", pointLightPositions[2]);
+	lightingProgram.setVec3Uniform("pointLights[3].position", pointLightPositions[3]);
+
+	lightingProgram.setVec3Uniform("pointLights[0].ambientColor", pointLightColors[0] * 0.1f);
+	lightingProgram.setVec3Uniform("pointLights[0].baseColor", pointLightColors[0]);
+	lightingProgram.setVec3Uniform("pointLights[0].specularColor", pointLightColors[0]);
+
+	lightingProgram.setVec3Uniform("pointLights[1].ambientColor", pointLightColors[1] * 0.1f);
+	lightingProgram.setVec3Uniform("pointLights[1].baseColor", pointLightColors[1]);
+	lightingProgram.setVec3Uniform("pointLights[1].specularColor", pointLightColors[1]);
+
+	lightingProgram.setVec3Uniform("pointLights[2].ambientColor", pointLightColors[2] * 0.1f);
+	lightingProgram.setVec3Uniform("pointLights[2].baseColor", pointLightColors[2]);
+	lightingProgram.setVec3Uniform("pointLights[2].specularColor", pointLightColors[2]);
+
+	lightingProgram.setVec3Uniform("pointLights[3].ambientColor", pointLightColors[3] * 0.1f);
+	lightingProgram.setVec3Uniform("pointLights[3].baseColor", pointLightColors[3]);
+	lightingProgram.setVec3Uniform("pointLights[3].specularColor", pointLightColors[3]);
+
+
+	lightingProgram.setFloatUniform("pointLights[0].constant", 1.0f);
+	lightingProgram.setFloatUniform("pointLights[0].linear", 0.09f);
+	lightingProgram.setFloatUniform("pointLights[0].quadratic", 0.032f);
+
+	lightingProgram.setFloatUniform("pointLights[1].constant", 1.0f);
+	lightingProgram.setFloatUniform("pointLights[1].linear", 0.09f);
+	lightingProgram.setFloatUniform("pointLights[1].quadratic", 0.032f);
+
+	lightingProgram.setFloatUniform("pointLights[2].constant", 1.0f);
+	lightingProgram.setFloatUniform("pointLights[2].linear", 0.09f);
+	lightingProgram.setFloatUniform("pointLights[2].quadratic", 0.032f);
+
+	lightingProgram.setFloatUniform("pointLights[3].constant", 1.0f);
+	lightingProgram.setFloatUniform("pointLights[3].linear", 0.09f);
+	lightingProgram.setFloatUniform("pointLights[3].quadratic", 0.032f);
 
 	while(!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -219,7 +270,7 @@ int main() {
 		emissiveProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
 
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -243,8 +294,17 @@ int main() {
 		emissiveProgram.Activate();
 
 		lightVAO.Bind();
+		for (int i = 0; i < 4; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			modelMatrix = glm::mat4(1.0f);
+			modelMatrix = glm::translate(modelMatrix, pointLightPositions[i]);
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f));
+			emissiveProgram.setMat4Uniform("modelMatrix", modelMatrix);
+			emissiveProgram.setVec3Uniform("lightColor", pointLightColors[i]);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
@@ -311,24 +371,6 @@ void processInput(GLFWwindow *window) {
 		camera.position += camera.speed * camera.world_yAxis;
 	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 		camera.position -= camera.speed * camera.world_yAxis;
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		lightSourcePosition += camera.speed * camera.world_zAxis;
-	} else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		lightSourcePosition -= camera.speed * camera.world_zAxis;
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		lightSourcePosition += camera.speed * camera.world_xAxis;
-	} else if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		lightSourcePosition -= camera.speed * camera.world_xAxis;
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-		lightSourcePosition += camera.speed * camera.world_yAxis;
-	} else if(glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-		lightSourcePosition -= camera.speed * camera.world_yAxis;
 	}
 }
 
