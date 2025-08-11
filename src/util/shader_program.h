@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <glm/fwd.hpp>
+#include <glm/glm/fwd.hpp>
 
 std::string getFileContents(const char* filename);
 

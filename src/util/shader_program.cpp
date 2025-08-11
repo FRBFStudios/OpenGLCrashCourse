@@ -7,7 +7,7 @@
 
 #include "shader_program.h"
 
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
 std::string getFileContents(const char* filename) {
 	if (std::ifstream in(filename, std::ios::binary); in) {

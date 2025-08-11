@@ -15,9 +15,9 @@
 
 #include "scene/camera.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -40,7 +40,13 @@ int main() {
 
 	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Crash Course", glfwGetPrimaryMonitor(), NULL);
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+
+	const int WIDTH = videoMode->width;
+	const int HEIGHT = videoMode->height;
+
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Crash Course", primaryMonitor, NULL);
 	if(window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();

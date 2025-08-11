@@ -32,15 +32,26 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include
 )
 
-link_directories(${CMAKE_SOURCE_DIR}/lib)
+message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "Is CCing: ${CMAKE_CROSSCOMPILING}")
+message(STATUS "WIN32: ${WIN32}")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/lib/libglfw3.a
-        OpenGL::GL
-        dl
-        pthread
-        wayland-client
-        wayland-cursor
-        wayland-egl
-        xkbcommon
-)
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # For Windows cross-compiling with MinGW-w64
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${CMAKE_SOURCE_DIR}/lib/windows/libglfw3.a
+            opengl32  # Windows OpenGL library
+    )
+else()
+    # Native Linux build
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${CMAKE_SOURCE_DIR}/lib/linux/libglfw3.a
+            OpenGL::GL  # Linux OpenGL target from find_package
+            dl
+            pthread
+            wayland-client
+            wayland-cursor
+            wayland-egl
+            xkbcommon
+    )
+endif()
