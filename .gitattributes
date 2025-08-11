@@ -1,3 +1,12 @@
+include/** linguist-vendored
+
+emissive.frag linguist-language=C
+emissive.vert linguist-language=C
+color.vert linguist-language=C
+color.frag linguist-language=C
+default.vert linguist-language=C
+default.frag linguist-language=C
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
