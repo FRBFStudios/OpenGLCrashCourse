@@ -26,46 +26,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 80.0f, 0.1f, 0.05f);
+glm::vec3 lightSourcePosition(1.2f, 1.0f, 2.0f);
 
-constexpr int WIDTH = 16;
-constexpr int HEIGHT = 9;
-
-int main() {
-	glfwInit();
-
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
-
-	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-
-	const int WIDTH = videoMode->width;
-	const int HEIGHT = videoMode->height;
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Crash Course", primaryMonitor, NULL);
-	if(window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-
-	if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-
-	glViewport(0, 0, WIDTH, HEIGHT);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback);
-
-	glEnable(GL_DEPTH_TEST);
 
 	/*float vertices [] = {
 		// X     Y      Z  // R     G     B  // U     V  // Normals
@@ -144,6 +106,56 @@ int main() {
 		5, 6, 7
 	};
 
+	glm::vec3 cubePositions[] = {
+		glm::vec3( 0.0f,  0.0f,  0.0f),
+		glm::vec3( 2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3( 2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3( 1.3f, -2.0f, -2.5f),
+		glm::vec3( 1.5f,  2.0f, -2.5f),
+		glm::vec3( 1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
+int main() {
+	glfwInit();
+
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
+
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+
+	const int WIDTH = videoMode->width;
+	const int HEIGHT = videoMode->height;
+
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Crash Course", primaryMonitor, NULL);
+	if(window == NULL) {
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
+	glViewport(0, 0, WIDTH, HEIGHT);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
+
+	glEnable(GL_DEPTH_TEST);
+
 
 	VAO VAO1;
 	VBO VBO1(vertices, sizeof(vertices));
@@ -167,7 +179,6 @@ int main() {
 	lightingProgram.Activate();
 	lightingProgram.setVec3Uniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-	glm::vec3 lightSourcePosition(1.2f, 1.0f, 2.0f);
 
 	Texture testTexture("resources/boringTestImage.png", GL_TEXTURE_2D, GL_TEXTURE0);
 	Texture::setTexUnit(lightingProgram, "material.defaultColor", 0);
@@ -188,7 +199,6 @@ int main() {
 		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
-		lightingProgram.setMat4Uniform("modelMatrix", modelMatrix);
 		lightingProgram.setMat4Uniform("viewMatrix", viewMatrix);
 		lightingProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
@@ -211,7 +221,17 @@ int main() {
 		lightingProgram.Activate();
 
 		VAO1.Bind();
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			modelMatrix = glm::mat4(1.0f);
+			modelMatrix = glm::translate(modelMatrix, cubePositions[i]);
+			const float angle = 20.0f * i;
+			modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			lightingProgram.setMat4Uniform("modelMatrix", modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
 
@@ -286,6 +306,24 @@ void processInput(GLFWwindow *window) {
 		camera.position += camera.speed * camera.world_yAxis;
 	} else if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 		camera.position -= camera.speed * camera.world_yAxis;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		lightSourcePosition += camera.speed * camera.world_zAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		lightSourcePosition -= camera.speed * camera.world_zAxis;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		lightSourcePosition += camera.speed * camera.world_xAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		lightSourcePosition -= camera.speed * camera.world_xAxis;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+		lightSourcePosition += camera.speed * camera.world_yAxis;
+	} else if(glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+		lightSourcePosition -= camera.speed * camera.world_yAxis;
 	}
 }
 

@@ -15,7 +15,7 @@ uniform mat4 projectionMatrix;
 
 void main() {
     //color = aColor;
-    normal = aNormal;
+    normal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     textureCoordinates = aTexCoord;
     fragPosition = vec3(modelMatrix * vec4(aPos, 1.0));
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
