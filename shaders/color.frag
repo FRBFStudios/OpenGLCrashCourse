@@ -84,10 +84,10 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPosition, vec3 
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection) {
-    vec3 lightDirection = normalize(-light.direction);
+    vec3 lightDirection = normalize(light.direction);
 
-    float diffuseStrength = max(dot(normal, lightDirection), 0);
-    vec3 reflectionDirection = reflect(-lightDirection, normal);
+    float diffuseStrength = max(dot(normal, -lightDirection), 0);
+    vec3 reflectionDirection = reflect(lightDirection, normal);
 
     float specularStrength = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
 
