@@ -3,14 +3,16 @@
 
 #include <glad/glad.h>
 
+#include "model_loader.h"
+
 class VBO {
 public:
 	unsigned int ID{};
-	VBO(GLfloat* vertices, GLsizeiptr size);
+	explicit VBO(std::vector<Vertex> &vertices);
 
-	void Bind();
+	void Bind() const;
 	static void Unbind();
-	void Delete();
+	void Delete() const;
 };
 
 #endif //VBO_H
