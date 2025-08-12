@@ -46,7 +46,7 @@ else()
     # Native Linux build
     target_link_libraries(${PROJECT_NAME} PRIVATE
             ${CMAKE_SOURCE_DIR}/lib/linux/libglfw3.a
-            ${CMAKE_SOURCE_DIR}/lib/linux/libassimp.so.6.0.2
+            ${CMAKE_SOURCE_DIR}/lib/linux/libassimp.a
             OpenGL::GL  # Linux OpenGL target from find_package
             dl
             pthread
