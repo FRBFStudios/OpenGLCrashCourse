@@ -22,11 +22,13 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         src/util/VAO.cpp
         src/util/EBO.h
         src/util/EBO.cpp
-        src/texture/stb.cpp
-        src/texture/texture.h
-        src/texture/texture.cpp
+        src/util/stb.cpp
+        src/util/texture.h
+        src/util/texture.cpp
         src/scene/camera.h
-        src/scene/camera.cpp)
+        src/scene/camera.cpp
+        src/util/model_loader.cpp
+        src/util/model_loader.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include

@@ -1,8 +1,9 @@
 #include "texture.h"
 #include "stb_image.h"
 
-Texture::Texture(char const *filePath, const GLenum typeArg, GLenum texUnit): ID(0) {
+Texture::Texture(char const *filePath, const GLenum typeArg, const GLenum texUnit, std::string usageArg): ID(0) {
 	type = typeArg;
+	usage = usageArg;
 
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, nrChannels;
