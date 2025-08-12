@@ -7,6 +7,8 @@
 #include "util/stb_image.h"
 #include "util/texture.h"
 
+#include "util/model.h"
+
 #include "util/shader_program.h"
 
 #include "util/VBO.h"
@@ -28,110 +30,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 80.0f, 0.1f, 0.05f);
 glm::vec3 lightSourcePosition(1.2f, 1.0f, 2.0f);
 
+glm::vec3 pointLightPositions[] = {
+	glm::vec3( 0.7f,  0.2f,  2.0f),
+	glm::vec3( 2.3f, -3.3f, -4.0f),
+	glm::vec3(-4.0f,  2.0f, -12.0f),
+	glm::vec3( 0.0f,  0.0f, -3.0f)
+};
 
-	/*float vertices [] = {
-		// X     Y      Z  // R     G     B  // U     V  // Normals
-		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-		-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
-		-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
-		 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,  0.0f,
-	};*/
-
-	float vertices[] = {
-		// positions          // normals           // texture coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-	    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-	     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-	    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-	     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-	    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		1, 2, 3,
-
-		0, 1, 4,
-		1, 4, 5,
-
-		0, 2, 4,
-		2, 4, 6,
-
-		1, 3, 5,
-		3, 5, 7,
-
-		2, 3, 6,
-		3, 6, 7,
-
-		4, 5, 6,
-		5, 6, 7
-	};
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3( 0.0f,  0.0f,  0.0f),
-		glm::vec3( 2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3( 2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3( 1.3f, -2.0f, -2.5f),
-		glm::vec3( 1.5f,  2.0f, -2.5f),
-		glm::vec3( 1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	glm::vec3 pointLightPositions[] = {
-		glm::vec3( 0.7f,  0.2f,  2.0f),
-		glm::vec3( 2.3f, -3.3f, -4.0f),
-		glm::vec3(-4.0f,  2.0f, -12.0f),
-		glm::vec3( 0.0f,  0.0f, -3.0f)
-	};
-
-	glm::vec3 pointLightColors[] = {
-		glm::vec3(1.0f, 0.6f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(1.0f, 1.0, 0.0),
-		glm::vec3(0.2f, 0.2f, 1.0f)
-	};
+glm::vec3 pointLightColors[] = {
+	glm::vec3(1.0f, 0.6f, 0.0f),
+	glm::vec3(1.0f, 0.0f, 0.0f),
+	glm::vec3(1.0f, 1.0, 0.0),
+	glm::vec3(0.2f, 0.2f, 1.0f)
+};
 
 int main() {
 	glfwInit();
@@ -170,41 +81,15 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	stbi_set_flip_vertically_on_load(true);
 
-	VAO VAO1;
-	VBO VBO1(vertices, sizeof(vertices));
-
-	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), 0); // XYZ
-	// VAO1.LinkAttributes(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float))); // RGB
-	VAO1.LinkAttributes(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));// UV
-	VAO1.LinkAttributes(VBO1, 3, 3, GL_FLOAT, 8 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));// Normals
-
-	EBO EBO1(indices, sizeof(indices), VAO1);
-
-	VAO lightVAO;
-	lightVAO.LinkAttributes(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-
-	EBO lightEBO(indices, sizeof(indices), lightVAO);
-
-	ShaderProgram defaultProgram("shaders/default.vert", "shaders/default.frag");
-	ShaderProgram lightingProgram("shaders/color.vert", "shaders/color.frag");
-	const ShaderProgram emissiveProgram("shaders/emissive.vert", "shaders/emissive.frag");
-
-	lightingProgram.Activate();
-	lightingProgram.setVec3Uniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
-
-	Texture testTexture("resources/boringTestImage.png", GL_TEXTURE_2D, GL_TEXTURE0, "DIFFUSE_MAP");
-	Texture::setTexUnit(lightingProgram, "material.defaultColor", 0);
-	Texture testSpecularMap("resources/boringTestImage_specularMap.png", GL_TEXTURE_2D, GL_TEXTURE1, "SPECULAR_MAP");
-	Texture::setTexUnit(lightingProgram, "material.specularColor", 1);
-
-	// Values for material parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
-	lightingProgram.setFloatUniform("material.shininess", 0.3 * 128);
+	ShaderProgram modelProgram("shaders/model.vert", "shaders/model.frag");
+	Model backpack("resources/testmodel/backpack.obj");
 
 	auto backgroundColor = glm::vec3(0.75f, 0.52f, 0.3f);
 
-	lightingProgram.setVec3Uniform("sun.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+	/*
+	shaderPr.setVec3Uniform("sun.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 	lightingProgram.setVec3Uniform("sun.ambientColor", backgroundColor * 0.125f);
 	lightingProgram.setVec3Uniform("sun.baseColor", backgroundColor);
 	lightingProgram.setVec3Uniform("sun.specularColor", backgroundColor * 1.25f);
@@ -245,7 +130,7 @@ int main() {
 
 	lightingProgram.setFloatUniform("pointLights[3].constant", 1.0f);
 	lightingProgram.setFloatUniform("pointLights[3].linear", 0.09f);
-	lightingProgram.setFloatUniform("pointLights[3].quadratic", 0.032f);
+	lightingProgram.setFloatUniform("pointLights[3].quadratic", 0.032f); */
 
 	while(!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -254,77 +139,25 @@ int main() {
 		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
-		lightingProgram.setMat4Uniform("viewMatrix", viewMatrix);
-		lightingProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
+		modelProgram.setMat4Uniform("modelMatrix", modelMatrix);
+		modelProgram.setMat4Uniform("viewMatrix", viewMatrix);
+		modelProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
-		lightingProgram.setVec3Uniform("light.position", lightSourcePosition);
+		backpack.draw(modelProgram);
 
-		lightingProgram.setVec3Uniform("cameraPosition", camera.position);
+		//modelProgram.setVec3Uniform("light.position", lightSourcePosition);
 
-
-		modelMatrix = glm::translate(modelMatrix, lightSourcePosition);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-
-		emissiveProgram.setMat4Uniform("modelMatrix", modelMatrix);
-		emissiveProgram.setMat4Uniform("viewMatrix", viewMatrix);
-		emissiveProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
-
+		//modelProgram.setVec3Uniform("cameraPosition", camera.position);
 
 		glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		lightingProgram.Activate();
-
-		VAO1.Bind();
-		for (int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, cubePositions[i]);
-			const float angle = 20.0f * i;
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			lightingProgram.setMat4Uniform("modelMatrix", modelMatrix);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-
-
-		emissiveProgram.Activate();
-
-		lightVAO.Bind();
-		for (int i = 0; i < 4; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, pointLightPositions[i]);
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f));
-			emissiveProgram.setMat4Uniform("modelMatrix", modelMatrix);
-			emissiveProgram.setVec3Uniform("lightColor", pointLightColors[i]);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		//glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	VBO::Unbind();
-	VBO1.Delete();
-
-	VAO::Unbind();
-	VAO1.Delete();
-	lightVAO.Delete();
-
-	EBO::Unbind();
-	EBO1.Delete();
-	lightEBO.Delete();
-
-	defaultProgram.Delete();
-	lightingProgram.Delete();
-	emissiveProgram.Delete();
+	modelProgram.Delete();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

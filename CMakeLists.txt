@@ -28,7 +28,9 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         src/scene/camera.h
         src/scene/camera.cpp
         src/util/model_loader.cpp
-        src/util/model_loader.h)
+        src/util/model_loader.h
+        src/util/model.cpp
+        src/util/model.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include

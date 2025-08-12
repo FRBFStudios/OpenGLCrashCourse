@@ -1,6 +1,7 @@
 #include "model_loader.h"
 
-Mesh::Mesh(vector<Vertex> &vertices, vector<unsigned int> &indices, vector<Texture> &textures) {
+Mesh::Mesh(vector<Vertex> &vertices, vector<unsigned int> &indices, vector<Texture> &textures): indices(indices), VBO1(vertices),
+	EBO1(indices, VAO1) {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
@@ -8,10 +9,8 @@ Mesh::Mesh(vector<Vertex> &vertices, vector<unsigned int> &indices, vector<Textu
 	setupMesh();
 }
 
-void Mesh::setupMesh() const {
-	VAO VAO1{};
-	VBO VBO1(vertices);
-	EBO EBO1(indices, VAO1);
+void Mesh::setupMesh() {
+
 
 	VAO1.LinkAttributes(VBO1, 0, 3, GL_FLOAT, sizeof(Vertex), 0);
 	VAO1.LinkAttributes(VBO1, 1, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void *>((offsetof(Vertex, normal))));
@@ -23,16 +22,16 @@ void Mesh::draw(ShaderProgram &shader) {
 	unsigned int specularNr = 1;
 
 	for(int i = 0; i < textures.size(); i++) {
-		string name = textures[i].usage;
+		string name = textures[i].type;
 
 		if(name == "DIFFUSE_MAP") {
-			name.append(std::to_string(diffuseNr++));
+			name.append(to_string(diffuseNr++));
 		} else if(name == "SPECULAR_MAP") {
-			name.append(std::to_string(specularNr++));
+			name.append(to_string(specularNr++));
 		}
 
 		shader.setIntUniform("material." + name, i);
-		textures[i].Bind();
+		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
 	glActiveTexture(GL_TEXTURE0);
 

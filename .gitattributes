@@ -65,3 +65,4 @@ default.frag linguist-language=C
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 libassimp.a filter=lfs diff=lfs merge=lfs -text
+resources/ filter=lfs diff=lfs merge=lfs -text
