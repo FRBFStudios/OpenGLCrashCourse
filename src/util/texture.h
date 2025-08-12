@@ -15,7 +15,7 @@ public:
 	GLenum format;
 	GLenum type;
 
-	explicit Texture(char const* filePath, GLenum typeArg, GLenum texUnit, std::string usageArg);
+	explicit Texture(char const* filePath, GLenum type, GLenum texUnit, std::string usage);
 
 	static void setTexUnit(ShaderProgram &shaderProgram, const char *uniform, GLint unit);
 	void Bind() const;

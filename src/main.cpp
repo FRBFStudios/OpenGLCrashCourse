@@ -4,8 +4,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "texture/stb_image.h"
-#include "texture/texture.h"
+#include "util/stb_image.h"
+#include "util/texture.h"
 
 #include "util/shader_program.h"
 
@@ -194,9 +194,9 @@ int main() {
 	lightingProgram.setVec3Uniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
 
-	Texture testTexture("resources/boringTestImage.png", GL_TEXTURE_2D, GL_TEXTURE0);
+	Texture testTexture("resources/boringTestImage.png", GL_TEXTURE_2D, GL_TEXTURE0, "DIFFUSE_MAP");
 	Texture::setTexUnit(lightingProgram, "material.defaultColor", 0);
-	Texture testSpecularMap("resources/boringTestImage_specularMap.png", GL_TEXTURE_2D, GL_TEXTURE1);
+	Texture testSpecularMap("resources/boringTestImage_specularMap.png", GL_TEXTURE_2D, GL_TEXTURE1, "SPECULAR_MAP");
 	Texture::setTexUnit(lightingProgram, "material.specularColor", 1);
 
 	// Values for material parameters can be found on http://devernay.free.fr/cours/opengl/materials.html (these are Obsidian)
