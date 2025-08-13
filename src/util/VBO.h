@@ -1,9 +1,10 @@
 #ifndef VBO_H
 #define VBO_H
 
+#include <vector>
 #include <glad/glad.h>
 
-#include "model_loader.h"
+#include "vertex.h"
 
 class VBO {
 public:

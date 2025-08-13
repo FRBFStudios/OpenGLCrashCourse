@@ -14,12 +14,6 @@ using namespace std;
 
 #include <glm/glm/glm.hpp>
 
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 textureCoordinates;
-};
-
 struct Texture {
 	unsigned int ID;
 	string type;
@@ -29,17 +23,16 @@ struct Texture {
 
 class Mesh {
 public:
-
 	vector<Vertex> vertices;
-	vector<unsigned int> &indices;
+	vector<unsigned int> indices;
 	vector<Texture> textures;
+	VAO VAO1;
 
-	Mesh(vector<Vertex> &vertices, vector<unsigned int> &indices, vector<Texture> &textures);
-	void draw(ShaderProgram &shader);
+	Mesh(vector<Vertex> &vertices, vector<unsigned int> &indices, const vector<Texture> &textures);
+	void draw(const ShaderProgram &shader) const;
 private:
-	VAO VAO1{};
-	VBO VBO1(vertices);
-	EBO EBO1(indices, VAO1);
+	VBO VBO1;
+	EBO EBO1;
 
 	void setupMesh();
 };

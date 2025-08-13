@@ -1,5 +1,5 @@
-#ifndef VAO_H
-#define VAO_H
+#ifndef VAO_CLASS_H
+#define VAO_CLASS_H
 
 #include <glad/glad.h>
 
@@ -16,4 +16,4 @@ public:
 	void Delete();
 };
 
-#endif //VAO_H
+#endif //VAO_CLASS_H

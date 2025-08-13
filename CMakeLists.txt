@@ -23,14 +23,13 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         src/util/EBO.h
         src/util/EBO.cpp
         src/util/stb.cpp
-        src/util/texture.h
-        src/util/texture.cpp
         src/scene/camera.h
         src/scene/camera.cpp
         src/util/model_loader.cpp
         src/util/model_loader.h
         src/util/model.cpp
-        src/util/model.h)
+        src/util/model.h
+        src/util/vertex.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include
@@ -49,6 +48,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     # Native Linux build
     target_link_libraries(${PROJECT_NAME} PRIVATE
+            z
+            minizip
             ${CMAKE_SOURCE_DIR}/lib/linux/libglfw3.a
             ${CMAKE_SOURCE_DIR}/lib/linux/libassimp.a
             OpenGL::GL  # Linux OpenGL target from find_package
