@@ -30,17 +30,17 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), 80.0f, 
 glm::vec3 lightSourcePosition(1.2f, 1.0f, 2.0f);
 
 glm::vec3 pointLightPositions[] = {
-	glm::vec3( 0.7f,  0.2f,  2.0f),
-	glm::vec3( 2.3f, -3.3f, -4.0f),
-	glm::vec3(-4.0f,  2.0f, -12.0f),
-	glm::vec3( 0.0f,  0.0f, -3.0f)
+	glm::vec3( -4.0f,  0.0f,  -4.0f),
+	glm::vec3( 4.0f, 0.0f, -4.0f),
+	glm::vec3(-4.0f,  0.0f, 4.0f),
+	glm::vec3( 4.0f,  0.0f, 4.0f)
 };
 
 glm::vec3 pointLightColors[] = {
-	glm::vec3(1.0f, 0.6f, 0.0f),
-	glm::vec3(1.0f, 0.0f, 0.0f),
-	glm::vec3(1.0f, 1.0, 0.0),
-	glm::vec3(0.2f, 0.2f, 1.0f)
+	glm::vec3(0.1f, 0.5f, 1.0f),
+	glm::vec3(0.1f, 0.5f, 1.0f),
+	glm::vec3(0.1f, 0.5, 1.0),
+	glm::vec3(0.1f, 0.5f, 1.0f)
 };
 
 int main() {
@@ -80,20 +80,58 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	stbi_set_flip_vertically_on_load(true);
-
 	ShaderProgram modelProgram("shaders/model.vert", "shaders/model.frag");
-	Model backpack("resources/xmas-model/Xmas_House_Exterior.obj");
+	//Model test("resources/xmas-model/Xmas_House_Exterior.obj");
+	Model test("resources/testmodel/backpack.obj");
 
-	auto backgroundColor = glm::vec3(0.75f, 0.52f, 0.3f);
+	auto backgroundColor = glm::vec3(0.4f, 0.4f, 0.4f);
+
+
+	modelProgram.setFloatUniform("material.shininess", 32.0f);
+
+	modelProgram.setVec3Uniform("sun.direction", glm::vec3(-0.5f, -1.0f, -0.5f));
+	modelProgram.setVec3Uniform("sun.ambientColor", backgroundColor * 0.125f);
+	modelProgram.setVec3Uniform("sun.baseColor", backgroundColor);
+	modelProgram.setVec3Uniform("sun.specularColor", backgroundColor * 1.25f);
+	modelProgram.setVec3Uniform("pointLights[0].position", pointLightPositions[0]);
+	modelProgram.setVec3Uniform("pointLights[0].ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
+	modelProgram.setVec3Uniform("pointLights[0].baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
+	modelProgram.setVec3Uniform("pointLights[0].specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	modelProgram.setFloatUniform("pointLights[0].constant", 1.0f);
+	modelProgram.setFloatUniform("pointLights[0].linear", 0.09f);
+	modelProgram.setFloatUniform("pointLights[0].quadratic", 0.032f);
+
+	modelProgram.setVec3Uniform("pointLights[1].position", pointLightPositions[1]);
+	modelProgram.setVec3Uniform("pointLights[1].ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
+	modelProgram.setVec3Uniform("pointLights[1].baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
+	modelProgram.setVec3Uniform("pointLights[1].specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	modelProgram.setFloatUniform("pointLights[1].constant", 1.0f);
+	modelProgram.setFloatUniform("pointLights[1].linear", 0.09f);
+	modelProgram.setFloatUniform("pointLights[1].quadratic", 0.032f);
+
+	modelProgram.setVec3Uniform("pointLights[2].position", pointLightPositions[2]);
+	modelProgram.setVec3Uniform("pointLights[2].ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
+	modelProgram.setVec3Uniform("pointLights[2].baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
+	modelProgram.setVec3Uniform("pointLights[2].specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	modelProgram.setFloatUniform("pointLights[2].constant", 1.0f);
+	modelProgram.setFloatUniform("pointLights[2].linear", 0.09f);
+	modelProgram.setFloatUniform("pointLights[2].quadratic", 0.032f);
+
+	modelProgram.setVec3Uniform("pointLights[3].position", pointLightPositions[3]);
+	modelProgram.setVec3Uniform("pointLights[3].ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
+	modelProgram.setVec3Uniform("pointLights[3].baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
+	modelProgram.setVec3Uniform("pointLights[3].specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	modelProgram.setFloatUniform("pointLights[3].constant", 1.0f);
+	modelProgram.setFloatUniform("pointLights[3].linear", 0.09f);
+	modelProgram.setFloatUniform("pointLights[3].quadratic", 0.032f);
 
 	while(!glfwWindowShouldClose(window)) {
 		modelProgram.Activate();
 		processInput(window);
 
 		auto modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f, 0.1, 0.1f));
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -5.0f, 0.0f)); // translate it down so it's at the center of the scene
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));
 		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
@@ -101,11 +139,13 @@ int main() {
 		modelProgram.setMat4Uniform("viewMatrix", viewMatrix);
 		modelProgram.setMat4Uniform("projectionMatrix", projectionMatrix);
 
+		modelProgram.setVec3Uniform("cameraPosition", camera.position);
 
-		glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
+
+		glClearColor(0.0f, 0.53f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		backpack.draw(modelProgram);
+		test.draw(modelProgram);
 
 
 		glfwSwapBuffers(window);
