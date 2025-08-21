@@ -43,6 +43,9 @@ glm::vec3 pointLightColors[] = {
 	glm::vec3(0.1f, 0.5f, 1.0f)
 };
 
+bool enableFlashlight = false;
+bool firstFrameHeldFKey = true;
+
 int main() {
 	glfwInit();
 
@@ -80,19 +83,25 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	stbi_set_flip_vertically_on_load(true);
+
 	ShaderProgram modelProgram("shaders/model.vert", "shaders/model.frag");
-	//Model test("resources/xmas-model/Xmas_House_Exterior.obj");
-	Model test("resources/testmodel/backpack.obj");
+	Model test("resources/xmas-model/Xmas_House_Exterior.obj");
+	//Model test("resources/testmodel/backpack.obj");
 
-	auto backgroundColor = glm::vec3(0.4f, 0.4f, 0.4f);
-
+	auto backgroundColor = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	modelProgram.setFloatUniform("material.shininess", 32.0f);
 
-	modelProgram.setVec3Uniform("sun.direction", glm::vec3(-0.5f, -1.0f, -0.5f));
+	/*modelProgram.setVec3Uniform("sun.direction", glm::vec3(-0.5f, -1.0f, -0.5f));
 	modelProgram.setVec3Uniform("sun.ambientColor", backgroundColor * 0.125f);
 	modelProgram.setVec3Uniform("sun.baseColor", backgroundColor);
-	modelProgram.setVec3Uniform("sun.specularColor", backgroundColor * 1.25f);
+	modelProgram.setVec3Uniform("sun.specularColor", backgroundColor * 1.25f);*/
+
+	modelProgram.setFloatUniform("flashlight.constant", 1.0f);
+	modelProgram.setFloatUniform("flashlight.linear", 0.09f);
+	modelProgram.setFloatUniform("flashlight.quadratic", 0.032f);
+
 	modelProgram.setVec3Uniform("pointLights[0].position", pointLightPositions[0]);
 	modelProgram.setVec3Uniform("pointLights[0].ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
 	modelProgram.setVec3Uniform("pointLights[0].baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -129,8 +138,23 @@ int main() {
 		modelProgram.Activate();
 		processInput(window);
 
+		modelProgram.setVec3Uniform("flashlight.direction", camera.zAxis);
+		modelProgram.setVec3Uniform("flashlight.position", camera.position);
+		modelProgram.setFloatUniform("flashlight.cutOff", glm::cos(glm::radians(35.0f)));
+		modelProgram.setFloatUniform("flashlight.outerCutOff", glm::cos(glm::radians(37.5f)));
+
+		if(enableFlashlight) {
+			modelProgram.setVec3Uniform("flashlight.ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
+			modelProgram.setVec3Uniform("flashlight.baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
+			modelProgram.setVec3Uniform("flashlight.specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		} else {
+			modelProgram.setVec3Uniform("flashlight.ambientColor", glm::vec3(0.0f, 0.0f, 0.0f));
+			modelProgram.setVec3Uniform("flashlight.baseColor", glm::vec3(0.0f, 0.0f, 0.0f));
+			modelProgram.setVec3Uniform("flashlight.specularColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+
 		auto modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -5.0f, 0.0f)); // translate it down so it's at the center of the scene
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -50.0f, 0.0f)); // translate it down so it's at the center of the scene
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f));
 		const glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.zAxis, camera.yAxis);
 		const auto projectionMatrix = glm::perspective(glm::radians(camera.fov), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
@@ -142,7 +166,7 @@ int main() {
 		modelProgram.setVec3Uniform("cameraPosition", camera.position);
 
 
-		glClearColor(0.0f, 0.53f, 1.0f, 1.0f);
+		glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		test.draw(modelProgram);
@@ -166,6 +190,20 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	if(firstFrameHeldFKey) {
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && enableFlashlight) {
+			firstFrameHeldFKey = false;
+			enableFlashlight = false;
+		} else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !enableFlashlight) {
+			firstFrameHeldFKey = false;
+			enableFlashlight = true;
+		}
+	} else if (!firstFrameHeldFKey) {
+		if(glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
+			firstFrameHeldFKey = true;
+		}
 	}
 
 
