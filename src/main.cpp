@@ -54,6 +54,8 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	glfwWindowHint(GLFW_SAMPLES, 4);
+
 	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
 
 	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
@@ -144,9 +146,9 @@ int main() {
 		modelProgram.setFloatUniform("flashlight.outerCutOff", glm::cos(glm::radians(37.5f)));
 
 		if(enableFlashlight) {
-			modelProgram.setVec3Uniform("flashlight.ambientColor", glm::vec3(0.05f, 0.05f, 0.05f));
-			modelProgram.setVec3Uniform("flashlight.baseColor", glm::vec3(0.8f, 0.8f, 0.8f));
-			modelProgram.setVec3Uniform("flashlight.specularColor", glm::vec3(1.0f, 1.0f, 1.0f));
+			modelProgram.setVec4Uniform("flashlight.ambientColor", glm::vec4(0.05f, 0.05f, 0.05f, 1.0f));
+			modelProgram.setVec4Uniform("flashlight.baseColor", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+			modelProgram.setVec4Uniform("flashlight.specularColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		} else {
 			modelProgram.setVec3Uniform("flashlight.ambientColor", glm::vec3(0.0f, 0.0f, 0.0f));
 			modelProgram.setVec3Uniform("flashlight.baseColor", glm::vec3(0.0f, 0.0f, 0.0f));
@@ -204,6 +206,12 @@ void processInput(GLFWwindow *window) {
 		if(glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
 			firstFrameHeldFKey = true;
 		}
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+		glEnable(GL_MULTISAMPLE);
+	} else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
+		glDisable(GL_MULTISAMPLE);
 	}
 
 
