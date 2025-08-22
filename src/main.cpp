@@ -84,6 +84,8 @@ int main() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -136,9 +138,17 @@ int main() {
 	modelProgram.setFloatUniform("pointLights[3].linear", 0.09f);
 	modelProgram.setFloatUniform("pointLights[3].quadratic", 0.032f);
 
+	double lastFrameTime = 0.0f;
+	double deltaTime = 0.0f;
+
 	while(!glfwWindowShouldClose(window)) {
 		modelProgram.Activate();
 		processInput(window);
+
+		deltaTime = glfwGetTime() - lastFrameTime;
+		lastFrameTime = glfwGetTime();
+
+		std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
 
 		modelProgram.setVec3Uniform("flashlight.direction", camera.zAxis);
 		modelProgram.setVec3Uniform("flashlight.position", camera.position);
@@ -209,9 +219,9 @@ void processInput(GLFWwindow *window) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
-		glEnable(GL_MULTISAMPLE);
+		//put stuff to test in here
 	} else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
-		glDisable(GL_MULTISAMPLE);
+		//disable here
 	}
 
 

@@ -66,6 +66,10 @@ void main() {
     //vec3 result = calculateDirectionalLight(sun, norm, viewDirection);
     vec4 result = calculateSpotLight(flashlight, norm, fragPosition, viewDirection);
 
+    if (result.a < 0.1) {
+        discard;
+    }
+
     /*for(int i = 0; i < NR_POINT_LIGHTS; i++) {
         result += calculatePointLight(pointLights[i], norm, fragPosition, viewDirection);
     }*/
