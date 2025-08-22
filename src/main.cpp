@@ -148,7 +148,7 @@ int main() {
 		deltaTime = glfwGetTime() - lastFrameTime;
 		lastFrameTime = glfwGetTime();
 
-		std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
+		//std::cout << "FPS: " << 1.0f / deltaTime << std::endl;
 
 		modelProgram.setVec3Uniform("flashlight.direction", camera.zAxis);
 		modelProgram.setVec3Uniform("flashlight.position", camera.position);
@@ -160,9 +160,9 @@ int main() {
 			modelProgram.setVec4Uniform("flashlight.baseColor", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 			modelProgram.setVec4Uniform("flashlight.specularColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		} else {
-			modelProgram.setVec3Uniform("flashlight.ambientColor", glm::vec3(0.0f, 0.0f, 0.0f));
-			modelProgram.setVec3Uniform("flashlight.baseColor", glm::vec3(0.0f, 0.0f, 0.0f));
-			modelProgram.setVec3Uniform("flashlight.specularColor", glm::vec3(0.0f, 0.0f, 0.0f));
+			modelProgram.setVec4Uniform("flashlight.ambientColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+			modelProgram.setVec4Uniform("flashlight.baseColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+			modelProgram.setVec4Uniform("flashlight.specularColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		}
 
 		auto modelMatrix = glm::mat4(1.0f);
@@ -205,17 +205,12 @@ void processInput(GLFWwindow *window) {
 	}
 
 	if(firstFrameHeldFKey) {
-		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && enableFlashlight) {
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
 			firstFrameHeldFKey = false;
-			enableFlashlight = false;
-		} else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !enableFlashlight) {
-			firstFrameHeldFKey = false;
-			enableFlashlight = true;
+			enableFlashlight = !enableFlashlight;
 		}
-	} else if (!firstFrameHeldFKey) {
-		if(glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
-			firstFrameHeldFKey = true;
-		}
+	} else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE && !firstFrameHeldFKey) {
+		firstFrameHeldFKey = true;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
